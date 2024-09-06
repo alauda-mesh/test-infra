@@ -15,7 +15,7 @@ jobs:
           go-version: "1.22"
       - name: Install Tools
         run: |
-          go install k8s.io/test-infra/robots/pr-creator@latest
+          go install k8s.io/test-infra/robots/pr-creator
       - name: Run Automator
         env:
           AUTOMATOR_TOKEN: ${{ secrets.AUTOMATOR_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
           go-version: "1.22"
       - name: Install Tools
         run: |
-          go install k8s.io/test-infra/robots/pr-creator@latest
+          go install k8s.io/test-infra/robots/pr-creator
       - name: Run Automator
         env:
           AUTOMATOR_TOKEN: ${{ secrets.AUTOMATOR_TOKEN }}
