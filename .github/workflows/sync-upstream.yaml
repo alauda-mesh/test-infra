@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-upstream-istio-master:
+  sync-upstream-proxy-1-22:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,13 +23,13 @@ jobs:
           export BUILD_WITH_CONTAINER="0"
           ./tools/automator-main.sh \
             --org=alauda-mesh \
-            --repo=istio \
+            --repo=proxy \
             --branch=istio-1.22 \
             --token=${AUTOMATOR_TOKEN} \
             '--title=Automator: merge upstream changes to $AUTOMATOR_ORG/$AUTOMATOR_REPO@$AUTOMATOR_BRANCH' \
             "--labels=tide/merge-method-merge,auto-merge" \
-            --modifier=merge_upstream_istio_release_1_22 \
-            --merge-repository=https://github.com/istio/istio \
+            --modifier=merge_upstream_proxy_release_1_22 \
+            --merge-repository=https://github.com/istio/proxy \
             --merge-branch=release-1.22 \
             --merge-strategy=merge
 
