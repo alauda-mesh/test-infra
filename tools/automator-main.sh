@@ -60,7 +60,7 @@ get_opts() {
       shift 2
       ;;
     --labels)
-      labels="$(echo "$2" | jq --raw-input --compact-output 'split(",")')"
+      labels="$2"
       shift 2
       ;;
     --user)
@@ -268,7 +268,7 @@ create_pr() {
 
 add_labels() {
   if [ "${labels:-}" ]; then
-    curl -XPOST -sSfLH "Authorization: token $token" "https://api.github.com/repos/$org/$repo/issues/$pull_request/labels" --data "{\"labels\": $labels}" >/dev/null
+    gh pr edit "$pull_request" --repo "$org/$repo" --add-label "$labels"
   fi
 }
 
@@ -314,7 +314,6 @@ merge() {
   set -e
 
   if [ "$code" -ne 0 ]; then
-    export GITHUB_TOKEN="$token"
     local issue_exists
     issue_exists=$(gh issue list -S "Automatic merge of $merge_branch into $branch failed." -R "$org/$repo" | wc -l)
     if [ "$issue_exists" -eq 0 ]; then
@@ -351,17 +350,18 @@ validate_changes_exist_in_latest_commit() {
 }
 
 work() { (
+  export GITHUB_TOKEN="$token"
   set -e
 
   evaluate_opts
 
   if ! $dry_run; then
-    curl -XPOST -sSfLH "Authorization: token $token" "https://api.github.com/repos/$org/$repo/forks" >/dev/null
+    gh repo fork "$org/$repo"
   fi
 
   # Some jobs expect GOPATH setup, so simulate this
   mkdir -p src/istio.io/"$repo"
-  git clone --single-branch --branch "$branch" "https://github.com/$org/$repo.git" src/istio.io/"$repo"
+  gh repo clone "$org/$repo" src/istio.io/"$repo" -- --single-branch --branch "$branch"
 
   gopath=${PWD}
   pushd src/istio.io/"$repo"
